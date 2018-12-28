@@ -1,0 +1,96 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/gameFrame"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@android:color/black"
+    tools:context=".MainActivity"
+    tools:layout_editor_absoluteY="25dp">
+
+
+
+    <TextView
+        android:id="@+id/scoreLabel"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@android:color/darker_gray"
+        android:gravity="center"
+        android:padding="14dp"
+        android:text="Wynik = 0"
+        android:textColor="@android:color/white"
+        android:textSize="18sp"
+        android:textStyle="bold" />
+
+    <ImageView
+        android:id="@+id/blue"
+        android:layout_width="44dp"
+        android:layout_height="44dp"
+        android:layout_alignStart="@+id/red"
+        android:layout_alignTop="@+id/red"
+        android:layout_gravity="bottom"
+        android:layout_marginBottom="112dp"
+        android:layout_marginLeft="332dp"
+        android:src="@drawable/blue_ball" />
+
+    <ImageView
+        android:id="@+id/red"
+        android:layout_width="44dp"
+        android:layout_height="44dp"
+        android:layout_alignParentEnd="true"
+        android:layout_alignParentBottom="true"
+        android:layout_gravity="bottom"
+        android:layout_marginLeft="29dp"
+        android:layout_marginBottom="204dp"
+        android:src="@drawable/red_ball" />
+
+    <LinearLayout
+        android:id="@+id/startLayout"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentStart="true"
+        android:layout_marginStart="0dp"
+        android:layout_marginTop="110dp"
+        android:gravity="center"
+        android:orientation="vertical">
+
+        <TextView
+            android:id="@+id/startText"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:background="@android:color/black"
+            android:text="KULKA"
+            android:textColor="@android:color/white"
+            android:textSize="94sp"
+            android:textStyle="bold" />
+
+        <TextView
+            android:id="@+id/highScoreLabel"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="50dp"
+            android:background="@android:color/black"
+            android:text="Rekord : 300"
+            android:textColor="@android:color/white"
+            android:textSize="24sp"
+            android:textStyle="italic" />
+
+        <Button
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="60dp"
+            android:onClick="startGame"
+            android:text="START" />
+
+        <Button
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="10dp"
+            android:onClick="quitGame"
+            android:text="WYJŚCIE" />
+
+    </LinearLayout>
+
+
+</FrameLayout>
