@@ -18,7 +18,6 @@
         android:background="@android:color/darker_gray"
         android:gravity="center"
         android:padding="14dp"
-        android:text="Wynik = 0"
         android:textColor="@android:color/white"
         android:textSize="18sp"
         android:textStyle="bold" />
@@ -44,6 +43,61 @@
         android:layout_marginLeft="29dp"
         android:layout_marginBottom="204dp"
         android:src="@drawable/red_ball" />
+
+    <ImageView
+        android:id="@+id/white"
+        android:layout_width="44dp"
+        android:layout_height="44dp"
+        android:layout_alignParentEnd="true"
+        android:layout_alignParentBottom="true"
+        android:layout_gravity="bottom"
+        android:layout_marginLeft="80dp"
+        android:layout_marginBottom="204dp"
+        android:src="@drawable/white_ball" />
+
+    <ImageView
+        android:id="@+id/yellow"
+        android:layout_width="44dp"
+        android:layout_height="44dp"
+        android:layout_alignParentEnd="true"
+        android:layout_alignParentBottom="true"
+        android:layout_gravity="bottom"
+        android:layout_marginLeft="293dp"
+        android:layout_marginBottom="450dp"
+        android:src="@drawable/yellow_ball" />
+
+    <ImageView
+        android:id="@+id/orange"
+        android:layout_width="44dp"
+        android:layout_height="44dp"
+        android:layout_alignParentEnd="true"
+        android:layout_alignParentBottom="true"
+        android:layout_gravity="bottom"
+        android:layout_marginLeft="175dp"
+        android:layout_marginBottom="470dp"
+        android:src="@drawable/orange_ball" />
+
+    <ImageView
+        android:id="@+id/green"
+        android:layout_width="44dp"
+        android:layout_height="44dp"
+        android:layout_alignParentEnd="true"
+        android:layout_alignParentBottom="true"
+        android:layout_gravity="bottom"
+        android:layout_marginLeft="75dp"
+        android:layout_marginBottom="70dp"
+        android:src="@drawable/green_ball" />
+
+    <ImageView
+        android:id="@+id/purple"
+        android:layout_width="44dp"
+        android:layout_height="44dp"
+        android:layout_alignParentEnd="true"
+        android:layout_alignParentBottom="true"
+        android:layout_gravity="bottom"
+        android:layout_marginLeft="75dp"
+        android:layout_marginBottom="470dp"
+        android:src="@drawable/purple_ball" />
 
     <LinearLayout
         android:id="@+id/startLayout"
