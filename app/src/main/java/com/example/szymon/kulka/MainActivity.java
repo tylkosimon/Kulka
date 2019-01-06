@@ -21,26 +21,80 @@ import java.util.concurrent.TimeUnit;
 
 public class MainActivity extends AppCompatActivity implements SensorEventListener2 {
 
-    private LinearLayout startLayout;                                                               //layout startowy
-    private ImageView main;                                                                         //główna kulka
-    private ImageView[] colors = new ImageView[7];                                                  //tablica zawierająca kulki nie sterowane przez użytkownika
-    private int xMax;                                                                               //zmienna do określenia szerokości ekranu
-    private int yMax;                                                                               //zmienna do określenia długości ekranu
-    private int color;                                                                              //zmienna do wyboru koloru z tablicy kolorów
-    private float xChange;                                                                          //zmienna określająca zmianę poziomej pozycji głównej kulki
-    private float yChange;                                                                          //zmienna określająca zmianę pionowej pozycji głównej kulki
-    private TextView scoreLabel;                                                                    //tekst belki z wynikiem
-    private TextView highScoreLabel;                                                                //tekst rekordu
-    private int score;                                                                              //zmienna przechowująca aktualny wynik
-    private int highScore;                                                                          //zmienna przechowująca najwyższy wynik
-    private float [] xRand = new float[7];                                                          //tablica przechowująca wartość zmiany poziomej pozycji kulek
-    private float [] yRand = new float[7];                                                          //tablica przechowująca wartość zmiany pionowej pozycji kulek
-    private boolean start_flg;                                                                      //flaga uruchamiająca dodawanie punktów
-    private SharedPreferences settings;                                                             //zapisywanie rekordu w telefonie
-    private SensorManager sensorManager;                                                            //obsługa akcelerometru
+    /**
+     * layout startowy
+     */
+    private LinearLayout startLayout;
+    /**
+     * główna kulka
+     */
+    private ImageView main;
+    /**
+     * tablica zawierająca kulki nie sterowane przez użytkownika
+     */
+    private ImageView[] colors = new ImageView[7];
+    /**
+     * zmienna do określenia szerokości ekranu
+     */
+    private int xMax;
+    /**
+     * zmienna do określenia długości ekranu
+     */
+    private int yMax;
+    /**
+     * zmienna do wyboru koloru z tablicy kolorów
+     */
+    private int color;
+    /**
+     * zmienna określająca zmianę poziomej pozycji głównej kulki
+     */
+    private float xChange;
+    /**
+     * zmienna określająca zmianę pionowej pozycji głównej kulki
+     */
+    private float yChange;
+    /**
+     * tekst belki z wynikiem
+     */
+    private TextView scoreLabel;
+    /**
+     * tekst rekordu
+     */
+    private TextView highScoreLabel;
+    /**
+     * zmienna przechowująca aktualny wynik
+     */
+    private int score;
+    /**
+     * zmienna przechowująca najwyższy wynik
+     */
+    private int highScore;
+    /**
+     * tablica przechowująca wartość zmiany poziomej pozycji kulek
+     */
+    private float [] xRand = new float[7];
+    /**
+     * tablica przechowująca wartość zmiany pionowej pozycji kulek
+     */
+    private float [] yRand = new float[7];
+    /**
+     * flaga uruchamiająca dodawanie punktów
+     */
+    private boolean start_flg;
+    /**
+     * zapisywanie rekordu w telefonie
+     */
+    private SharedPreferences settings;
+    /**
+     * obsługa akcelerometru
+     */
+    private SensorManager sensorManager;
 
 
-
+    /**
+     * inicjalizacja gry
+     * @param savedInstanceState
+     */
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
@@ -58,6 +112,9 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
         sensorManager = (SensorManager) getSystemService(Context.SENSOR_SERVICE);
     }
 
+    /**
+     * przypisanie elemntów z pliku xml do zmiennych
+     */
     public void findViewById(){
         startLayout = findViewById(R.id.startLayout);
         main = findViewById(R.id.main);
@@ -70,16 +127,23 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
         colors[6] = findViewById(R.id.white);
         scoreLabel = findViewById(R.id.scoreLabel);
         highScoreLabel = findViewById(R.id.highScoreLabel);
-    }                                                                 //przypisanie elemntów z pliku xml do zmiennych
+    }
 
+    /**
+     * zczytanie wielkości danego ekranu
+     */
     public void screenSize(){
         Point size = new Point();                                                                   //max wymiary
         Display display = getWindowManager().getDefaultDisplay();
         display.getSize(size);
         xMax = size.x - 97;
         yMax = size.y - 50;
-    }                                                                   //zczytanie wielkości danego ekranu
+    }
 
+    /**
+     * po naciśnięciu buttona START -> start gry
+     * @param view
+     */
     public void startGame(View view) {
         startLayout.setVisibility(View.INVISIBLE);
         start_flg = true;
@@ -98,8 +162,11 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
         highScore = settings.getInt("HIGH_SCORE", 0);
         highScoreLabel.setText("REKORD = " + highScore);
 
-    }                                                          //po naciśnięciu buttona START
+    }
 
+    /**
+     * ustawienie kulek poza ekran
+     */
     public void ballsStart(){
         colors[0].setX(-666);                                                                       //red
         colors[1].setX(-666);                                                                       //green
@@ -110,8 +177,11 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
         colors[6].setX(-666);                                                                       //white
         main.setX(xMax/2);
         main.setY(yMax/2);
-    }                                                                   //ustawienie kulek poza ekran
+    }
 
+    /**
+     * wybór koloru głównej kulki spośród kulek aktualnie będących na ekranie
+     */
     public void pickColor() {
         Random rand = new Random();
         color = rand.nextInt(7);
@@ -133,9 +203,11 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
         } else if (color == 6) {
             main.setImageResource(R.drawable.white_ball);
         }
-    }                                                                   //wybór koloru głównej kulki
+    }
 
-
+    /**
+     * dodanie kulki niesterowanej przez użytkownika
+     */
     public void addBall(){
         Random rand = new Random();
         int number = rand.nextInt(7);
@@ -180,7 +252,7 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
             xRand[number] = rand.nextInt(3) + 1;                                                    //przypisanie predkosci poruszania sie kulki
             yRand[number] = rand.nextInt(3) + 1;
         }
-    }                                                                      //dodanie kulki niesterowanej przez użytkownika
+    }
 
     @Override
     protected void onStart() {
@@ -194,7 +266,10 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
         super.onStop();
     }
 
-
+    /**
+     * zmiana wartości sensora
+     * @param sensorEvent
+     */
     @Override
     public void onSensorChanged(SensorEvent sensorEvent) {
         if (sensorEvent.sensor.getType() == Sensor.TYPE_ACCELEROMETER) {
@@ -203,8 +278,11 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
             ballMovement();
             updateMainBall();
         }
-    }                                      //zmiana wartości sensora
+    }
 
+    /**
+     * aktualizowanie pozycji głównej kulki
+     */
     public void updateMainBall() {
 
             if (main.getX() > xMax-8) {
@@ -224,8 +302,11 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
 
             main.setX(main.getX() - xChange);
             main.setY(main.getY() - yChange);
-    }                                                              //aktualizowanie pozycji głównej kulki
+    }
 
+    /**
+     * przemieszczenie kulek niesterowanych przez użytkownika
+     */
     public void ballMovement(){
         for(int i=0; i<7; i++){
             if(colors[i].getX() != -666) {
@@ -246,8 +327,13 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
                     } while (hitCheck(i));
             }
         }
-    }                                                                 //przemieszczenie kulek niesterowanych przez użytkownika
+    }
 
+    /**
+     * sprawdzenie czy kulki się nie zderzyły
+     * @param k
+     * @return
+     */
     public boolean hitCheck(int k) {
         if (start_flg) {
             float r = 60;
@@ -276,8 +362,11 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
                 return true;
             }
         }return false;
-    }                                                            //sprawdzenie czy kulki się nie zderzyły
+    }
 
+    /**
+     * zderzenie nieodpowiednich kulek -> koniec gry
+     */
     public void gameOver(){
         try{
             TimeUnit.SECONDS.sleep(2);
@@ -296,7 +385,7 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
         start_flg = false;
         score = 0;
 
-    }                                                                     //zderzenie nieodpowiednich kulek
+    }
 
     @Override
     public void onAccuracyChanged(Sensor sensor, int i) {
@@ -307,11 +396,15 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
 
     }
 
+    /**
+     * po naciśnięcu buttona WYJŚCIE -> wyjście z gry
+     * @param view
+     */
     public void quitGame (View view){
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
             finishAndRemoveTask();
         } else {
             finish();
         }
-    }                                                           //wyjście z gry
+    }
 }
