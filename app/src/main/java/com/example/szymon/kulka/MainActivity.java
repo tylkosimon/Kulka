@@ -10,6 +10,7 @@ import android.hardware.Sensor;
 import android.hardware.SensorEvent;
 import android.hardware.SensorEventListener2;
 import android.hardware.SensorManager;
+import android.media.Image;
 import android.os.Build;
 import android.os.Handler;
 import android.support.v7.app.AppCompatActivity;
@@ -17,6 +18,9 @@ import android.os.Bundle;
 import android.view.Display;
 import android.view.View;
 import android.view.WindowManager;
+import android.view.animation.Animation;
+import android.view.animation.LinearInterpolator;
+import android.view.animation.RotateAnimation;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
@@ -30,16 +34,16 @@ import java.util.concurrent.TimeUnit;
 public class MainActivity extends AppCompatActivity implements SensorEventListener2 {
 
     private LinearLayout startLayout;
-    private ImageView white;
-    private ImageView[] colors = new ImageView[6];
+    private ImageView main;
+    private ImageView[] colors = new ImageView[7];
     private int xMax, yMax, color;
     private float xChange, yChange;
     private TextView scoreLabel, highScoreLabel;
-    private int score, highScore, timeCount;
+    private int score, highScore;
     private SharedPreferences settings;
     private SensorManager sensorManager;
-    private float [] xRand = new float[6];
-    private float [] yRand = new float[6];
+    private float [] xRand = new float[7];
+    private float [] yRand = new float[7];
     private boolean start_flg;
 
 
@@ -51,18 +55,25 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
         setContentView(R.layout.activity_main);
         startLayout = findViewById(R.id.startLayout);
 
-        white = findViewById(R.id.white);
+
+        main = findViewById(R.id.main);
+
         colors[0] = findViewById(R.id.red);
         colors[1] = findViewById(R.id.green);
         colors[2] = findViewById(R.id.yellow);
         colors[3] = findViewById(R.id.orange);
         colors[4] = findViewById(R.id.purple);
         colors[5] = findViewById(R.id.blue);
-
-
+        colors[6] = findViewById(R.id.white);
 
         scoreLabel = findViewById(R.id.scoreLabel);
         highScoreLabel = findViewById(R.id.highScoreLabel);
+
+        settings = getSharedPreferences("GAME_DATA", Context.MODE_PRIVATE);
+        highScore = settings.getInt("HIGH_SCORE",0);
+        highScoreLabel.setText("REKORD = " +highScore);
+
+
 
         Point size = new Point();                                                                   //max wymiary
         Display display = getWindowManager().getDefaultDisplay();
@@ -83,16 +94,18 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
         colors[3].setX(-666);                                                                       //orange
         colors[4].setX(-666);                                                                       //purple
         colors[5].setX(-666);                                                                       //blue
+        colors[6].setX(-666);                                                                       //white
 
 
 
-        white.setX(xMax/2);
-        white.setY(yMax/2);
+        main.setX(xMax/2);
+        main.setY(yMax/2);
 
 
-        firstBall();
-        secondBall();
-        thirdBall();
+        addBall();
+        addBall();
+        addBall();
+
         pickColor();
 
 
@@ -100,144 +113,80 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
 
         settings = getSharedPreferences("GAME_DATA", Context.MODE_PRIVATE);
         highScore = settings.getInt("HIGH_SCORE", 0);
-        highScoreLabel.setText("Rekord = " + highScore);
+        highScoreLabel.setText("REKORD = " + highScore);
 
     }
 
-    public void pickColor(){
+    public void pickColor() {
         Random rand = new Random();
-        color = rand.nextInt(6);
-        while(colors[color].getX() == -666){
-            color = rand.nextInt(6);
+        color = rand.nextInt(7);
+        while (colors[color].getX() == -666) {
+            color = rand.nextInt(7);
         }
-        if (color == 0){
-            scoreLabel.setBackgroundColor(Color.rgb(220,20,60));
-        }else if(color == 1){
-            scoreLabel.setBackgroundColor(Color.rgb(0,255,0));
-        }else if(color == 2){
-            scoreLabel.setBackgroundColor(Color.rgb(255,255,0));
-        }else if(color == 3){
-            scoreLabel.setBackgroundColor(Color.rgb(255,165,0));
-        }else if(color == 4){
-            scoreLabel.setBackgroundColor(Color.rgb(148,0,211));
-        }else if(color == 5){
-            scoreLabel.setBackgroundColor(Color.rgb(0,191,255));
+        if (color == 0) {
+            main.setImageResource(R.drawable.red_ball);
+        } else if (color == 1) {
+            main.setImageResource(R.drawable.green_ball);
+        } else if (color == 2) {
+            main.setImageResource(R.drawable.yellow_ball);
+        } else if (color == 3) {
+            main.setImageResource(R.drawable.orange_ball);
+        } else if (color == 4) {
+            main.setImageResource(R.drawable.purple_ball);
+        } else if (color == 5) {
+            main.setImageResource(R.drawable.blue_ball);
+        } else if (color == 6) {
+            main.setImageResource(R.drawable.white_ball);
         }
     }
 
 
-    public void firstBall(){
+    public void addBall(){
         Random rand = new Random();
-        int number = rand.nextInt(6);
-        int x,y;
-        x = rand.nextInt(xMax);
-        y = rand.nextInt(yMax-150)+150;
-        ImageView random1 = (colors[number]);
-        float r = 700;
+        int number = rand.nextInt(7);
 
-        while (java.lang.Math.abs(white.getX() - colors[number].getX()) < r && java.lang.Math.abs(white.getY() - colors[number].getY()) > r) {
-            x = rand.nextInt(xMax);
-            y = rand.nextInt(yMax);
-        }
-
-        random1.setX(x);                                                                            //pozycja poczatkowa
-        random1.setY(y);
-
-        xRand[number] = rand.nextInt(5)+1;                                                    //przypisanie predkosci poruszania sie kulki
-        yRand[number] = rand.nextInt(5)+1;
-    }
-
-    public void secondBall(){
-        Random rand = new Random();
-        int number = rand.nextInt(6);
-
-        ImageView random2 = (colors[number]);
-        while (random2.getX() != -666) {                                                            //warunek na kolor ktory nie jest na planszy
-            number = rand.nextInt(6);
-            random2 = (colors[number]);
+        ImageView random = (colors[number]);
+        while (random.getX() != -666) {                                                            //warunek na kolor ktory nie jest na planszy
+            number = rand.nextInt(7);
+            random = (colors[number]);
         }
         int x,y;
         x = rand.nextInt(xMax);
         y = rand.nextInt(yMax-150)+150;
 
-        float r = 700;
+        float r = 600;
 
-        while (java.lang.Math.abs(white.getX() - colors[number].getX()) < r && java.lang.Math.abs(white.getY() - colors[number].getY()) > r) {
+        while ((Math.abs(main.getX() - x) < r) && (Math.abs(main.getY() - y) < r)) {
             x = rand.nextInt(xMax);
-            y = rand.nextInt(yMax);
+            y = rand.nextInt(yMax-150)+150;
         }
 
-
-        random2.setX(x);                                                                            //pozycja poczatkowa
-        random2.setY(y);
-
-        xRand[number] = rand.nextInt(7)+1;                                                    //przypisanie predkosci poruszania sie kulki
-        yRand[number] = rand.nextInt(7)+1;
-    }
-
-    public void thirdBall(){
-        Random rand = new Random();
-        int number = rand.nextInt(6);
-
-        ImageView random3 = (colors[number]);
-        while (random3.getX() != -666) {
-            number = rand.nextInt(6);
-            random3 = (colors[number]);
+        random.setX(x);                                                                            //pozycja poczatkowa
+        random.setY(y);
+        if(score>5 & score <11) {
+            xRand[number] = rand.nextInt(4) + 2;                                                    //przypisanie predkosci poruszania sie kulki
+            yRand[number] = rand.nextInt(4) + 2;
+        }else if(score>10 & score <21){
+            xRand[number] = rand.nextInt(5) + 2;                                                    //przypisanie predkosci poruszania sie kulki
+            yRand[number] = rand.nextInt(5) + 2;
+        }else if(score>20 & score <25) {
+            xRand[number] = rand.nextInt(6) + 3;                                                    //przypisanie predkosci poruszania sie kulki
+            yRand[number] = rand.nextInt(6) + 3;
+        }else if(score>24 & score <30){
+            xRand[number] = rand.nextInt(7) + 4;                                                    //przypisanie predkosci poruszania sie kulki
+            yRand[number] = rand.nextInt(7) + 4;
+        }else if(score>29 & score <35){
+            xRand[number] = rand.nextInt(8) + 5;                                                    //przypisanie predkosci poruszania sie kulki
+            yRand[number] = rand.nextInt(8) + 5;
+        }else if(score>34) {
+            xRand[number] = rand.nextInt(9) + 6;                                                    //przypisanie predkosci poruszania sie kulki
+            yRand[number] = rand.nextInt(9) + 6;                                                    //przypisanie predkosci poruszania sie kulki
+        }else {
+            xRand[number] = rand.nextInt(3) + 1;                                                    //przypisanie predkosci poruszania sie kulki
+            yRand[number] = rand.nextInt(3) + 1;
         }
-        random3.setX(xMax/2 + rand.nextInt(500));                                            //pozycja poczatkowa
-        random3.setY(yMax/2 + rand.nextInt(500));
-
-        xRand[number] = rand.nextInt(7)+1;                                                    //przypisanie predkosci poruszania sie kulki
-        yRand[number] = rand.nextInt(7)+1;
     }
 
-    public void fourthBall(){
-        Random rand = new Random();
-        int number = rand.nextInt(6);
-
-        ImageView random4 = (colors[number]);
-        while (random4.getX() != -666) {
-            number = rand.nextInt(6);
-            random4 = (colors[number]);
-        }
-        random4.setX(xMax/2 + rand.nextInt(500));                                            //pozycja poczatkowa
-        random4.setY(yMax/2 + rand.nextInt(500));
-
-        xRand[number] = rand.nextInt(7)+1;                                                    //przypisanie predkosci poruszania sie kulki
-        yRand[number] = rand.nextInt(7)+1;
-    }
-
-    public void fifthBall(){
-        Random rand = new Random();
-        int number = rand.nextInt(6);
-
-        ImageView random5 = (colors[number]);
-        while (random5.getX() != -666) {
-            number = rand.nextInt(6);
-            random5 = (colors[number]);
-        }
-        random5.setX(xMax/2 + rand.nextInt(500));                                            //pozycja poczatkowa
-        random5.setY(yMax/2 + rand.nextInt(500));
-
-        xRand[number] = rand.nextInt(7)+1;                                                    //przypisanie predkosci poruszania sie kulki
-        yRand[number] = rand.nextInt(7)+1;
-    }
-
-    public void sixthBall(){
-        Random rand = new Random();
-        int number = rand.nextInt(6);
-
-        ImageView random6 = (colors[number]);
-        while (random6.getX() != -666) {
-            number = rand.nextInt(6);
-            random6 = (colors[number]);
-        }
-        random6.setX(xMax/2 + rand.nextInt(500));                                            //pozycja poczatkowa
-        random6.setY(yMax/2 + rand.nextInt(500));
-
-        xRand[number] = rand.nextInt(7)+1;                                                    //przypisanie predkosci poruszania sie kulki
-        yRand[number] = rand.nextInt(7)+1;
-    }
     @Override
     protected void onStart() {
         super.onStart();
@@ -254,32 +203,36 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
     @Override
     public void onSensorChanged(SensorEvent sensorEvent) {
         if (sensorEvent.sensor.getType() == Sensor.TYPE_ACCELEROMETER) {
-            xChange = (sensorEvent.values[0])*5;
-            yChange = (-sensorEvent.values[1])*5;
+            xChange = (sensorEvent.values[0])*3;
+            yChange = (-sensorEvent.values[1])*3;
             updateWhiteBall();
             ballMovement();
         }
     }
 
     public void updateWhiteBall() {
-            if (white.getX() > xMax) {
-                white.setX(xMax);
-            } else if (white.getX() < -15) {
-                white.setX(-15);
+            if (main.getX() > xMax-8) {
+                xChange = xChange/10;
+                main.setX(xMax-8);
+            } else if (main.getX() < -21) {
+                xChange = xChange/10;
+                main.setX(-21);
             }
-            if (white.getY() > yMax) {
-                white.setY(yMax);
-            } else if (white.getY() < 112) {
-                white.setY(112);
+            if (main.getY() > yMax-8) {
+                yChange = yChange/10;
+                main.setY(yMax-8);
+            } else if (main.getY() < 113) {
+                yChange = yChange/10;
+                main.setY(113);
             }
 
 
-            white.setX(white.getX() - xChange);
-            white.setY(white.getY() - yChange);
+            main.setX(main.getX() - xChange);
+            main.setY(main.getY() - yChange);
     }
 
     public void ballMovement(){
-        for(int i=0; i<6; i++){
+        for(int i=0; i<7; i++){
             if(colors[i].getX() != -666) {
                 do {
                     if (colors[i].getX() > xMax) {
@@ -304,23 +257,25 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
 
     public boolean hitCheck(int k) {
         if (start_flg) {
-            float r = 70;
+            float r = 55;
 
-            if (java.lang.Math.abs(white.getX() - colors[k].getX()) < r && java.lang.Math.abs(white.getY() - colors[k].getY()) < r) {
+            if (java.lang.Math.abs(main.getX() - colors[k].getX()) < r && java.lang.Math.abs(main.getY() - colors[k].getY()) < r) {
                 if (k == color) {
                     score += 1;
                     scoreLabel.setText("Wynik = " + score);
 
                     colors[k].setX(-666);
-                    secondBall();
-                    if(score == 5){
-                        fourthBall();
-                    }else if (score == 10){
-                        fifthBall();
-                    }else if (score == 15){
-                        sixthBall();
-                    }
+                    addBall();
 
+                    if(score == 5){
+                        addBall();
+                    }else if (score == 10){
+                        addBall();
+                    }else if (score == 15) {
+                        addBall();
+                    }else if (score == 20){
+                        addBall();
+                    }
                     pickColor();
                 } else {
                     gameOver();
@@ -331,10 +286,25 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
     }
 
     public void gameOver(){
+
+        try{
+            TimeUnit.SECONDS.sleep(2);
+        }catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+        if(score>highScore){
+            highScore = score;
+            highScoreLabel.setText("REKORD = " + highScore);
+
+            SharedPreferences.Editor editor = settings.edit();
+            editor.putInt("HIGH_SCORE", highScore);
+            editor.commit();
+        }
         startLayout.setVisibility(View.VISIBLE);
         scoreLabel.setText("");
         start_flg = false;
         score = 0;
+
     }
 
     @Override
