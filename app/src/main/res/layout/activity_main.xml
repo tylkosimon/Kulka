@@ -133,11 +133,20 @@
             android:id="@+id/highScoreLabel"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginTop="50dp"
+            android:layout_marginTop="30dp"
             android:background="@android:color/black"
             android:text="Rekord : 300"
             android:textColor="@android:color/white"
             android:textSize="24sp"
+            android:textStyle="italic" />
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="50dp"
+            android:background="@android:color/black"
+            android:text="Złap kulkę tego samego koloru!"
+            android:textColor="@android:color/white"
+            android:textSize="18sp"
             android:textStyle="italic" />
 
         <Button
