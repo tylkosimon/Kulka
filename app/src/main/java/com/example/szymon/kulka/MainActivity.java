@@ -2,33 +2,21 @@ package com.example.szymon.kulka;
 
 import android.content.Context;
 import android.content.SharedPreferences;
-import android.content.pm.ActivityInfo;
-import android.graphics.Color;
 import android.graphics.Point;
-import android.graphics.drawable.Drawable;
 import android.hardware.Sensor;
 import android.hardware.SensorEvent;
 import android.hardware.SensorEventListener2;
 import android.hardware.SensorManager;
-import android.media.Image;
 import android.os.Build;
-import android.os.Handler;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.Display;
 import android.view.View;
 import android.view.WindowManager;
-import android.view.animation.Animation;
-import android.view.animation.LinearInterpolator;
-import android.view.animation.RotateAnimation;
-import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
-
 import java.util.Random;
-import java.util.Timer;
-import java.util.TimerTask;
 import java.util.concurrent.TimeUnit;
 
 public class MainActivity extends AppCompatActivity implements SensorEventListener2 {
@@ -53,11 +41,21 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
         getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
+        findViewById();
+
+        settings = getSharedPreferences("GAME_DATA", Context.MODE_PRIVATE);
+        highScore = settings.getInt("HIGH_SCORE",0);
+        highScoreLabel.setText("REKORD = " +highScore);
+
+        screenSize();
+
+        sensorManager = (SensorManager) getSystemService(Context.SENSOR_SERVICE);
+    }
+
+    public void findViewById(){
         startLayout = findViewById(R.id.startLayout);
-
-
         main = findViewById(R.id.main);
-
         colors[0] = findViewById(R.id.red);
         colors[1] = findViewById(R.id.green);
         colors[2] = findViewById(R.id.yellow);
@@ -65,42 +63,23 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
         colors[4] = findViewById(R.id.purple);
         colors[5] = findViewById(R.id.blue);
         colors[6] = findViewById(R.id.white);
-
         scoreLabel = findViewById(R.id.scoreLabel);
         highScoreLabel = findViewById(R.id.highScoreLabel);
+    }
 
-        settings = getSharedPreferences("GAME_DATA", Context.MODE_PRIVATE);
-        highScore = settings.getInt("HIGH_SCORE",0);
-        highScoreLabel.setText("REKORD = " +highScore);
-
-
-
+    public void screenSize(){
         Point size = new Point();                                                                   //max wymiary
         Display display = getWindowManager().getDefaultDisplay();
         display.getSize(size);
         xMax = size.x - 97;
         yMax = size.y - 50;
-
-        sensorManager = (SensorManager) getSystemService(Context.SENSOR_SERVICE);
     }
 
     public void startGame(View view) {
         startLayout.setVisibility(View.INVISIBLE);
         start_flg = true;
 
-        colors[0].setX(-666);                                                                       //red
-        colors[1].setX(-666);                                                                       //green
-        colors[2].setX(-666);                                                                       //yellow
-        colors[3].setX(-666);                                                                       //orange
-        colors[4].setX(-666);                                                                       //purple
-        colors[5].setX(-666);                                                                       //blue
-        colors[6].setX(-666);                                                                       //white
-
-
-
-        main.setX(xMax/2);
-        main.setY(yMax/2);
-
+        ballsStart();
 
         addBall();
         addBall();
@@ -110,11 +89,22 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
 
 
         scoreLabel.setText("Wynik = 0");
-
         settings = getSharedPreferences("GAME_DATA", Context.MODE_PRIVATE);
         highScore = settings.getInt("HIGH_SCORE", 0);
         highScoreLabel.setText("REKORD = " + highScore);
 
+    }
+
+    public void ballsStart(){
+        colors[0].setX(-666);                                                                       //red
+        colors[1].setX(-666);                                                                       //green
+        colors[2].setX(-666);                                                                       //yellow
+        colors[3].setX(-666);                                                                       //orange
+        colors[4].setX(-666);                                                                       //purple
+        colors[5].setX(-666);                                                                       //blue
+        colors[6].setX(-666);                                                                       //white
+        main.setX(xMax/2);
+        main.setY(yMax/2);
     }
 
     public void pickColor() {
@@ -205,12 +195,13 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
         if (sensorEvent.sensor.getType() == Sensor.TYPE_ACCELEROMETER) {
             xChange = (sensorEvent.values[0])*3;
             yChange = (-sensorEvent.values[1])*3;
-            updateWhiteBall();
             ballMovement();
+            updateMainBall();
         }
     }
 
-    public void updateWhiteBall() {
+    public void updateMainBall() {
+
             if (main.getX() > xMax-8) {
                 xChange = xChange/10;
                 main.setX(xMax-8);
@@ -225,7 +216,6 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
                 yChange = yChange/10;
                 main.setY(113);
             }
-
 
             main.setX(main.getX() - xChange);
             main.setY(main.getY() - yChange);
@@ -248,16 +238,14 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
 
                     colors[i].setX(colors[i].getX()+xRand[i]);
                     colors[i].setY(colors[i].getY()+yRand[i]);
-
-
-                } while (hitCheck(i));
+                    } while (hitCheck(i));
             }
         }
     }
 
     public boolean hitCheck(int k) {
         if (start_flg) {
-            float r = 55;
+            float r = 60;
 
             if (java.lang.Math.abs(main.getX() - colors[k].getX()) < r && java.lang.Math.abs(main.getY() - colors[k].getY()) < r) {
                 if (k == color) {
@@ -286,7 +274,6 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
     }
 
     public void gameOver(){
-
         try{
             TimeUnit.SECONDS.sleep(2);
         }catch (InterruptedException e) {
@@ -295,7 +282,6 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
         if(score>highScore){
             highScore = score;
             highScoreLabel.setText("REKORD = " + highScore);
-
             SharedPreferences.Editor editor = settings.edit();
             editor.putInt("HIGH_SCORE", highScore);
             editor.commit();
@@ -324,10 +310,3 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
         }
     }
 }
-
-
-
-
-
-
-/////////////////////////////////////////////////////////////////////////////////////////////////

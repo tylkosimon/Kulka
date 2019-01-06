@@ -83,7 +83,7 @@
         android:layout_alignParentBottom="true"
         android:layout_gravity="bottom"
         android:layout_marginLeft="175dp"
-        android:layout_marginBottom="470dp"
+        android:layout_marginBottom="70dp"
         android:src="@drawable/orange_ball" />
 
     <ImageView
